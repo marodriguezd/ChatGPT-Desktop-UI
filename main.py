@@ -1,4 +1,47 @@
+from threading import Thread
+import PySimpleGUI as sg
 import openai
+
+desired_engines = ['gpt-3.5-turbo', 'gpt-3.5-turbo-16k', 'gpt-4-1106-preview']
+
+
+def chat_window(chat_client, gpt_engines):
+    sg.theme('DarkAmber')  # Color theme
+
+    # Define layout
+    layout = [
+    [sg.Text("Choose engine:"), sg.Combo(gpt_engines, key='-ENGINE-', default_value=gpt_engines[0], readonly=True)],
+        [sg.Text("ChatGPT", size=(40, 1), justification='center')],
+        [sg.Output(size=(80, 20))],
+        [sg.Multiline(size=(70, 5), enter_submits=False, key='-QUERY-', do_not_clear=False),
+         sg.Button('Send', bind_return_key=True)]
+    ]
+
+    # Create Window
+    window = sg.Window("ChatGPT Interface", layout, finalize=True)
+
+    while True:
+        event, values = window.read()
+
+        if event == sg.WINDOW_CLOSED:
+            break
+        elif event == 'Send':
+            user_input = values['-QUERY-'].strip()
+            if user_input:
+                print(f"You: {user_input}")
+                window['-QUERY-'].update('')
+
+                # Start the API call in a separate thread to prevent UI freezing
+                Thread(target=get_response_from_chatgpt,
+                       args=(window, chat_client, user_input)).start()
+    window.close()
+
+
+def get_response_from_chatgpt(window, chat_client, prompt):
+    selected_engine = window['-ENGINE-'].get()  # Obtiene el motor seleccionado desde el ComboBox.
+    response = chat_client.create_chat(selected_engine, prompt)  # Pasa selected_engine a create_chat.
+    if response:
+        print(f"ChatGPT: {response}")
 
 
 # S: Single Responsibility Principle
@@ -25,76 +68,35 @@ class ChatGPTClient:
                 model=engine,
                 messages=self.message_history
             )
-            # response = openai.Completion.create(engine=engine, prompt=prompt)
             chat_response = response['choices'][0]['message']['content'].strip()
             self.add_message_to_history("assistant", chat_response)
             return chat_response
-            # return response['choices'][0]['message']['content'].strip()
-            # return response.choices[0].text.strip()
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
 
 
-# O: Open/Closed Principle
-class UserInterface:
-    def display_engines(self, engines):
-        # Define el orden deseado
-        desired_engines = ["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4-1106-preview"]
-
-        # Filtra y ordena los motores
-        filtered_ordered_engines = [engine for engine_id in desired_engines for engine in engines if
-                                    engine['id'] == engine_id]
-
-        print("\nVersiones GPT específicas:")
-        for i, engine in enumerate(filtered_ordered_engines, start=1):
-            print(f"{i}. {engine['id']}")
-
-        return filtered_ordered_engines
-
-    '''def display_engines(self, engines):
-        gpt_engines = [engine for engine in engines if "gpt-" in engine["id"]]
-        print("Available ChatGPT versions:")
-        for i in range(len(gpt_engines)):
-            print(f"{i+1}. {gpt_engines[i]['id']}")
-        """for i, engine in enumerate(engines, start=1):
-            print(f"{i}. {engine['id']}")"""
-        return gpt_engines'''
-
-    def select_engine(self, engines):
-        choice = int(input("Selecciona la versión de ChatGPT (por número): "))
-        return engines[choice - 1]["id"]
-
-    def get_prompt(self):
-        return input("\n¿Qué te gustaría preguntar a ChatGPT?: ")
+# def wished_engines(engines):
+#     gpt_engines = [engine for engine in engines if "gpt-" in engine["id"]]
+#     return gpt_engines
 
 
 # Main Program
 def main():
     API_KEY = "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"
-
     chat_client = ChatGPTClient(API_KEY)
-    ui = UserInterface()
 
+    # Inicializar la lista de engine ids si lo necesitas aquí
+    # Esto se puede hacer aquí o en otro lugar antes de llamar a chat_window
     engines = chat_client.get_engines()["data"]
-    gpt_engines = ui.display_engines(engines)
-    if not gpt_engines:
-        print("No GPT engines available.")
-        return
+    # gpt_engines = wished_engines(engines)
 
-    selected_engine = ui.select_engine(gpt_engines)
+    # if not gpt_engines:
+    #     print("No GPT engines available.")
+    #     return
 
-    while True:
-        prompt = ui.get_prompt()
-
-        print("Recibiendo respuesta...")
-
-        response = chat_client.create_chat(selected_engine, prompt)
-
-        if response:
-            print(f"\nChatGPT responde: {response}")
-        else:
-            print("Failed to get a response from ChatGPT.")
+    # selected_engine = gpt_engines[0]['id']
+    chat_window(chat_client, desired_engines)
 
 
 if __name__ == "__main__":

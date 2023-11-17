@@ -1,36 +1,48 @@
-import openai
+import PySimpleGUI as sg
+from threading import Thread
 
 
-class ChatGPTClient:
-    def __init__(self, api_key):
-        self.api_key = api_key
-        self.message_history = []
-        openai.api_key = self.api_key
+def chat_window(chat_client):
+    sg.theme('DarkAmber')  # Color theme
 
-    def get_engines(self):
-        return openai.Engine.list()
+    # Define layout
+    layout = [
+        [sg.Text("ChatGPT", size=(40, 1), justification='center')],
+        [sg.Output(size=(80, 20))],
+        [sg.Multiline(size=(70, 5), enter_submits=False, key='-QUERY-', do_not_clear=False),
+         sg.Button('Send', bind_return_key=True)]
+    ]
 
-    def add_message_to_history(self, role, content):
-        self.message_history.append({
-            "role": role,
-            "content": content
-        })
+    # Create window
+    window = sg.Window("ChatGPT Interface", layout, finalize=True)
 
-    def create_chat(self, engine, prompt):
-        self.add_message_to_history("user", prompt)
+    while True:
+        event, values = window.read()
 
-        try:
-            response = openai.ChatCompletion.create(
-                model=engine,
-                messages=self.message_history
-            )
-            chat_response = response['choices'][0]['message']['content'].strip()
-            self.add_message_to_history("assistant", chat_response)
-            return chat_response
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return None
+        if event == sg.WIN_CLOSED:
+            break
+        elif event == 'Send':
+            user_input = values['-QUERY-'].strip()
+            if user_input:
+                print(f"You: {user_input}")
+                window['-QUERY-'].update('')
 
-# El resto de la clase UserInterface se mantiene igual
+                # Start the API call in a separate thread to prevent UI freezing
+                Thread(target=get_response_from_chatgpt,
+                       args=(window, chat_client, user_input, selected_engine)).start()
 
-# El resto del código principal se mantiene igual
+    window.close()
+
+
+def get_response_from_chatgpt(window, chat_client, prompt, engine):
+    response = chat_client.create_chat(engine, prompt)
+    if response:
+        print(f"ChatGPT: {response}")
+
+
+# Then modify the main program to use PySimpleGUI
+def main():
+    # ... existing code ...
+    chat_window(chat_client)
+
+# ... existing code ...
