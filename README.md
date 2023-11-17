@@ -5,3 +5,9 @@ Tan solo debes cambiar abajo del todo de ChatGPT_Desktop_UI.py donde pone YOUR_A
 ```
 pyinstaller --noconsole --onefile --hidden-import=openai main.py
 ```
+
+Pero primero debes tener:
+```
+pip install openai==0.28
+pip install PySimpleGui
+```
