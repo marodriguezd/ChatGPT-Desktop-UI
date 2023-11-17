@@ -83,7 +83,7 @@ class ChatGPTClient:
 
 # Main Program
 def main():
-    API_KEY = "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"
+    API_KEY = "YOUR_API_KEY_HERE"
     chat_client = ChatGPTClient(API_KEY)
 
     # Inicializar la lista de engine ids si lo necesitas aquí
