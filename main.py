@@ -28,7 +28,7 @@ def chat_window(chat_client, gpt_engines):
         elif event == 'Send':
             user_input = values['-QUERY-'].strip()
             if user_input:
-                print(f"You: {user_input}")
+                print(f"Tú: {user_input}\n")
                 window['-QUERY-'].update('')
 
                 # Start the API call in a separate thread to prevent UI freezing
@@ -41,7 +41,7 @@ def get_response_from_chatgpt(window, chat_client, prompt):
     selected_engine = window['-ENGINE-'].get()  # Obtiene el motor seleccionado desde el ComboBox.
     response = chat_client.create_chat(selected_engine, prompt)  # Pasa selected_engine a create_chat.
     if response:
-        print(f"ChatGPT: {response}")
+        print(f"ChatGPT: {response}\n")
 
 
 # S: Single Responsibility Principle
@@ -88,7 +88,7 @@ def main():
 
     # Inicializar la lista de engine ids si lo necesitas aquí
     # Esto se puede hacer aquí o en otro lugar antes de llamar a chat_window
-    engines = chat_client.get_engines()["data"]
+    # engines = chat_client.get_engines()["data"]
     # gpt_engines = wished_engines(engines)
 
     # if not gpt_engines:
