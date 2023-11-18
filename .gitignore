@@ -1,3 +1,10 @@
+# Compilations
+build/
+dist/
+
+# Temporals
+temp.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
