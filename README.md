@@ -1,13 +1,8 @@
 # ChatGPT-Desktop-UI
+
+Este proyecto es asistido por el propio ChatGPT.
+Refactorizado y modularizado siguiendo el patrón de diseño Singleton.
+
 Usas tu API key y puedes usar GTP: 3.5-turbo y su versión 16k, y la preview de GPT-4-turbo.
 
-Tan solo debes cambiar abajo del todo de ChatGPT_Desktop_UI.py donde pone YOUR_API_KEY_HERE poner la tuya y luego compilar con:
-```
-pyinstaller --noconsole --onefile --hidden-import=openai main.py
-```
-
-Pero primero debes tener:
-```
-pip install openai==0.28
-pip install PySimpleGui
-```
+Tan solo debes colocar tu API key arriba a la derecha y ya se guarda para cada arranque.
