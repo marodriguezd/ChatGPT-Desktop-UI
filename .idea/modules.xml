@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ChatGPT_API_Terminal.iml" filepath="$PROJECT_DIR$/.idea/ChatGPT_API_Terminal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ChatGPT-Desktop-UI.iml" filepath="$PROJECT_DIR$/.idea/ChatGPT-Desktop-UI.iml" />
     </modules>
   </component>
 </project>
